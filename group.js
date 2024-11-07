@@ -1,3 +1,22 @@
+function fillFullNames(){
+            let f = document.getElementsByClassName("emploeeDivFull");
+            let n = document.getElementsByClassName("emploeeDivNumber");
+            for (let i = 0; i < f.length; i++) {
+                f[i].style.display = "block";
+                n[i].style.display = "block";
+            }
+        }
+    function handler(kitchen_or_bar) {
+
+        
+        fillFullNames();
+        fillWeekDays(kitchen_or_bar);
+        if (kitchen_or_bar == "bar") {
+            return runBar();
+        }
+        runKitchen();
+    }
+
 function checkRowsOnHoliday(kitchen_or_bar) {
         let conteiner = document.getElementById(`conteiner_${kitchen_or_bar}`);
         let columns = conteiner.getElementsByClassName("column");
