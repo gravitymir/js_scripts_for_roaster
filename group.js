@@ -42,7 +42,7 @@
             chat_id: GROUP,
             conteiner: kitchen_or_bar,
             show_in_terminal: true,
-            sound: true,
+            disable_notification: true,
         });
         document.getElementById("main").style.display = "none";
         document.getElementById("main").style.marginLeft = "-3000px";
@@ -118,7 +118,7 @@ function runKitchen() {
             chat_id: GROUP,
             conteiner: `${kitchen_or_bar}`,
             show_in_terminal: true,
-            sound: false,
+            disable_notification: true,
         });//to gearoid
 
 
@@ -138,7 +138,7 @@ function runKitchen() {
                 caption: `<code>${messageSTR}</code>#roster${kitchen_or_bar}pcb\n${wdsResult[0]} week <b>${wdsResult[1]}</b>\n\n<code>${MATRIX_DATA[kitchen_or_bar].join("")}</code>`,
                 conteiner: kitchen_or_bar,
                 show_in_terminal: true,
-                sound: false,
+                disable_notification: true,
             });
             document.getElementById("main").style.display = "none";
             document.getElementById("main").style.marginRight = "-3000";
