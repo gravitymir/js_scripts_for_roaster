@@ -142,7 +142,7 @@ function runKitchen() {
             });
             document.getElementById("main").style.display = "none";
             document.getElementById("main").style.marginRight = "-3000";
-        }, 1100, false);
+        }, 2000, false);
     }
 (function init(){
         document.getElementById("main").style.marginLeft = "0px";
