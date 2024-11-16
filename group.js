@@ -43,6 +43,7 @@
             conteiner: kitchen_or_bar,
             show_in_terminal: true,
             disable_notification: true,
+            has_spoiler: false
         });
         document.getElementById("main").style.display = "none";
         document.getElementById("main").style.marginLeft = "-3000px";
@@ -119,6 +120,7 @@ function runKitchen() {
             conteiner: `${kitchen_or_bar}`,
             show_in_terminal: true,
             disable_notification: true,
+            has_spoiler: true
         });//to gearoid
 
 
