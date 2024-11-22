@@ -140,7 +140,7 @@ function runKitchen() {
                 caption: `<code>${messageSTR}</code>#roster${kitchen_or_bar}pcb\n${wdsResult[0]} week <b>${wdsResult[1]}</b>\n\n<code>${MATRIX_DATA[kitchen_or_bar].join("")}</code>`,
                 conteiner: kitchen_or_bar,
                 show_in_terminal: true,
-                disable_notification: true,
+                disable_notification: false,
                 has_spoiler: false
             });
             document.getElementById("main").style.display = "none";
