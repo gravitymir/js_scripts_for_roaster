@@ -113,20 +113,20 @@ function runKitchen() {
         }
 
         checkRowsOnHoliday(kitchen_or_bar);
-        sendImageToTelegram({
-            wdsResult: wdsResult,
-            caption: "",
-            chat_id: GROUP,
-            conteiner: `${kitchen_or_bar}`,
-            show_in_terminal: true,
-            disable_notification: true,
-            has_spoiler: true
-        });//to gearoid
+        // sendImageToTelegram({
+        //     wdsResult: wdsResult,
+        //     caption: "",
+        //     chat_id: GROUP,
+        //     conteiner: `${kitchen_or_bar}`,
+        //     show_in_terminal: true,
+        //     disable_notification: true,
+        //     has_spoiler: true
+        // });//to gearoid
 
 
         for (let i = 0; i < selects.length; i++) {
             let p = selects[i].parentElement.getElementsByTagName("p")[0];
-            p.innerHTML = p.innerHTML;
+            // p.innerHTML = p.innerHTML;
             p.style.fontSize = "20px";
             p.classList = `p${p.innerHTML}`;
         };
@@ -145,7 +145,7 @@ function runKitchen() {
             });
             document.getElementById("main").style.display = "none";
             document.getElementById("main").style.marginRight = "-3000";
-        }, 2000, false);
+        }, 1000, false);
     }
 (function init(){
         document.getElementById("main").style.marginLeft = "0px";
