@@ -38,7 +38,7 @@
         let messageSTR = countFromMatrix(kitchen_or_bar);
         sendImageToTelegram({
             wdsResult: wdsResult,
-            caption:  `${wdsResult[0]} week <b>${wdsResult[1]}</b>\n\n<code>${messageSTR}</code>#roster${kitchen_or_bar}pcb\n\n<code>${MATRIX_DATA[kitchen_or_bar].join("")}</code>`,
+            caption:  `<code>${wdsResult[0]} week ${wdsResult[1]}\n\n${messageSTR}</code>#roster${kitchen_or_bar}pcb\n\n<code>${MATRIX_DATA[kitchen_or_bar].join("")}</code>`,
             chat_id: GROUP,
             conteiner: kitchen_or_bar,
             show_in_terminal: true,
@@ -137,7 +137,7 @@ function runKitchen() {
             sendImageToTelegram({
                 wdsResult: wdsResult,
                 chat_id: GROUP,
-                caption: `${wdsResult[0]} week <b>${wdsResult[1]}</b>\n\n<code>${messageSTR}</code>#roster${kitchen_or_bar}pcb\n\n<code>${MATRIX_DATA[kitchen_or_bar].join("")}</code>`,
+                caption: `<code>${wdsResult[0]} week ${wdsResult[1]}\n\n${messageSTR}</code>#roster${kitchen_or_bar}pcb\n\n<code>${MATRIX_DATA[kitchen_or_bar].join("")}</code>`,
                 conteiner: kitchen_or_bar,
                 show_in_terminal: true,
                 disable_notification: false,
