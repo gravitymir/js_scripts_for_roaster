@@ -11,6 +11,27 @@
         let bar = document.getElementById(`conteiner_${kitchen_or_bar}`);
         let colums = bar.getElementsByClassName("column");
 
+        let selects = bar.getElementsByTagName("select");
+        for (let s = 0; s < selects.length; s++) {
+            selects[s].style.display = "none";
+            let p = document.createElement('p');
+            p.innerHTML = selects[s].value;
+            p.classList = `p${selects[s].value}`;
+            p.style.fontSize = "20px";
+            selects[s].parentNode.appendChild(p);
+        }
+
+        let messageSTR = countFromMatrix(kitchen_or_bar);
+        sendImageToTelegram({
+            wdsResult: wdsResult,
+            caption:  `<code>${wdsResult[0]} week ${wdsResult[1]}\n\n${messageSTR}</code>#roster${kitchen_or_bar}pcb\n\n<code>${MATRIX_DATA[kitchen_or_bar].join("")}</code>`,
+            chat_id: GROUP,
+            conteiner: kitchen_or_bar,
+            show_in_terminal: true,
+            disable_notification: false,
+            has_spoiler: false
+        });
+
         for (let c = 1; c < colums.length; c++) {
             let selects = colums[c].getElementsByTagName("select");
             let check = true;
@@ -25,17 +46,7 @@
             }
         }
 
-        let selects = bar.getElementsByTagName("select");
-        for (let s = 0; s < selects.length; s++) {
-            selects[s].style.display = "none";
-            let p = document.createElement('p');
-            p.innerHTML = selects[s].value;
-            p.classList = `p${selects[s].value}`;
-            p.style.fontSize = "20px";
-            selects[s].parentNode.appendChild(p);
-        }
-
-        let messageSTR = countFromMatrix(kitchen_or_bar);
+        
         sendImageToTelegram({
             wdsResult: wdsResult,
             caption:  `<code>${wdsResult[0]} week ${wdsResult[1]}\n\n${messageSTR}</code>#roster${kitchen_or_bar}pcb\n\n<code>${MATRIX_DATA[kitchen_or_bar].join("")}</code>`,
