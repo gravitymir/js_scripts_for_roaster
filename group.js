@@ -32,6 +32,29 @@
             has_spoiler: false
         });
 
+        for (let c = 1; c < colums.length - 3; c++) {
+            let selects = colums[c].getElementsByTagName("select");
+            let check = true;
+            for (let s = 0; s < selects.length; s++) {
+                if (selects[s].value != "OFF") {
+                    check = false;
+                    break;
+                }
+            }
+            if (check) {
+                colums[c].style.display = "none";
+            }
+        }
+        sendImageToTelegram({
+            wdsResult: wdsResult,
+            caption:  `<code>${wdsResult[0]} week ${wdsResult[1]}\n\n${messageSTR}</code>#roster${kitchen_or_bar}pcb\n\n<code>${MATRIX_DATA[kitchen_or_bar].join("")}</code>`,
+            chat_id: GROUP,
+            conteiner: kitchen_or_bar,
+            show_in_terminal: true,
+            disable_notification: false,
+            has_spoiler: false
+        });
+
         for (let c = 1; c < colums.length; c++) {
             let selects = colums[c].getElementsByTagName("select");
             let check = true;
