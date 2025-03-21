@@ -28,8 +28,8 @@
 #define AP_SSID "Inkplate"
 #define AP_PASSWORD "21212122"
 
-// #define BOT_TOKEN "354215638:AAEmWoBPUf7544u_xGBljYDwGlDHyPnlJ2E" // enebra
-#define BOT_TOKEN "7503204474:AAFRb8OeB0uUHpAugCbiDwJEDppYJvdwKD4" // patcollinsbar
+// #define BOT_TOKEN "" // enebra
+#define BOT_TOKEN "" // patcollinsbar
 
 // mean time between scan messages millis
 #define BOT_MTBS 10000
