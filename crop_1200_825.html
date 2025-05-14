@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Parcel Sandbox</title>
+    <meta charset="UTF-8" />
+    <link rel="icon"
+        href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2016%2016'%3E%3Ctext%20x='0'%20y='14'%3E🍳%3C/text%3E%3C/svg%3E"
+        type="image/svg+xml">
+    <title>Crop</title>
+</head>
+<style>
+    body,
+    html,
+    * {
+        padding: 0;
+        margin: 0;
+    }
+
+    html {
+        height: 100%;
+    }
+
+    body {
+        zoom: 20%;
+        min-height: 100%;
+    }
+
+    #inputFile {
+        display: none;
+    }
+
+    #inputFileLabel {
+        background-color: #a9d3f2;
+        font-size: 15em;
+
+        color: black;
+
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+
+        margin: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #downloadButtonLabel,
+    #telegramButtonLabel,
+    #uploadAgainButton {
+        background-color: rgb(209, 212, 240);
+        font-size: 5em;
+        color: black;
+        width: 1160px;
+        margin-top: 10px;
+        border-radius: 50px;
+        border: 20px solid black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        user-select: none;
+        height: 300px;
+    }
+
+
+    #image {
+        display: block;
+        max-width: 100%;
+        user-select: none;
+    }
+
+    #result {
+        display: block;
+    }
+
+    #canvas {
+        width: 1200px;
+        height: 825px;
+        margin-top: 50px;
+        margin-right: 50px;
+        background-color: rgb(137, 158, 177);
+    }
+
+    #frame {
+        width: 1200px;
+        height: 825px;
+        backdrop-filter: contrast(130%) brightness(250%);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        aspect-ratio: 1;
+        transform: translate(-50%, -50%);
+        position: fixed;
+
+    }
+
+    #frameMove {
+        display: block;
+        width: 200px;
+        height: 200px;
+        background: rgb(255 255 255 / 50%);
+        position: relative;
+        top: calc(50% - 100px);
+        left: calc(50% - 100px);
+        cursor: move;
+        z-index: 50;
+    }
+
+    #frameResize {
+        display: block;
+        width: 200px;
+        height: 200px;
+        background: rgb(255 255 255 / 50%);
+        position: relative;
+        top: calc(100% - 412px);
+        left: calc(100% - 212px);
+        cursor: nw-resize;
+        z-index: 100;
+    }
+
+    #contrast {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        backdrop-filter: contrast(80%) brightness(50%);
+        display: none;
+    }
+
+    #wrapper {
+        display: flex;
+        align-items: flex-start;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+    }
+
+    #wrapper>div {
+        display: flex;
+        align-items: flex-start;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+    }
+
+    #wrapper>div>button {
+        display: none;
+    }
+</style>
+
+<body>
+    <label for="inputFile" id="inputFileLabel" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);"
+        ondragleave="dragLeaveHandler(event)">
+        Tap | Click | Drag<br />
+        for upload photo
+    </label>
+    <input type='file' id='inputFile' onchange="loadImage(event)" accept="image/*" />
+    <div id="wrapper">
+        <img id="image" />
+        <div>
+            <canvas id="canvas" width="1200" height="825"></canvas>
+            <label for="downloadButton" id="downloadButtonLabel">
+                Download
+            </label>
+            <button id="downloadButton"></button>
+
+            <label for="telegramButton" id="telegramButtonLabel">
+                send to telegram
+            </label>
+            <button id="telegramButton"></button>
+
+            <label for="uploadAgain" id="uploadAgainButton">
+                upload
+            </label>
+            <button id="uploadAgain"></button>
+        </div>
+
+    </div>
+    <div id="contrast"></div>
+    <div id="frame">
+        <div id="frameMove"></div>
+        <div id="frameResize"></div>
+    </div>
+</body>
+<script>
+    const frameWidht = 1200;
+    const frameHeight = 825;
+    const aspectRatioW = 16;
+    const aspectRatioH = 11;
+    const telegramButton = document.getElementById("telegramButton");
+    const telegramButtonLabel = document.getElementById("telegramButtonLabel");
+    
+    const downloadButton = document.getElementById("downloadButton");
+    const uploadAgain = document.getElementById("uploadAgainButton");
+    const frame = document.getElementById("frame");
+
+    const contrast = document.getElementById("contrast");
+    const image = document.getElementById("image");
+
+
+    const frameResize = document.getElementById("frameResize");
+    const frameMove = document.getElementById("frameMove");
+
+
+    const input = document.getElementById("inputFile");
+    const inputLabel = document.getElementById("inputFileLabel");
+    const canvas = document.getElementById("canvas");
+
+
+    frameResize.onmousedown = () => {
+        document.body.onmousemove = e => {
+            e.preventDefault();
+            e.stopPropagation();
+            reSize(e.clientX, e.clientY);
+        }
+    };
+    document.body.onmouseup = () => {
+        document.body.onmousemove = null;
+    };
+    frameMove.addEventListener("touchmove", (e) => {
+        const clientX = e.changedTouches[0].clientX;
+        const clientY = e.changedTouches[0].clientY;
+        if (!frame.style.left) {
+            frame.style.left = 0;
+            frame.style.top = 0;
+        }
+        if (clientX * 5 > frame.offsetWidth / 2 && clientX * 5 < image.offsetWidth - frame.offsetWidth / 2) {
+            frame.style.left = `${clientX * 5}px`;
+        }
+        if (clientY * 5 > frame.offsetHeight / 2 && clientY * 5 < image.offsetHeight - frame.offsetHeight / 2) {
+            frame.style.top = `${clientY * 5}px`;
+        }
+        drawToCanvas();
+    });
+
+    frameResize.addEventListener("touchmove", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        reSize(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+    });
+
+
+
+    let lastX = 0;
+    let lastY = 0;
+    function reSize(clientX, clientY) {
+        if (lastX == 0) lastX = clientX;
+        if (lastY == 0) lastY = clientY;
+        if (lastX < clientX && lastY < clientY) {
+            if (frame.offsetHeight < image.offsetHeight && frame.offsetWidth < image.offsetWidth) {
+                frame.style.width = `${parseInt(frame.offsetWidth + aspectRatioW)}px`;
+                frame.style.height = `${parseInt(frame.offsetHeight + aspectRatioH)}px`;
+                frameResize.style.marginTop = `${parseInt(frameResize.style.marginTop + aspectRatioH)}px`
+            }
+        } else if (lastX > clientX && lastY > clientY) {
+
+            if (frame.offsetWidth > aspectRatioW * 13) {
+                console.log("else");
+                frame.style.width = `${parseInt(frame.offsetWidth - aspectRatioW)}px`;
+                frame.style.height = `${parseInt(frame.offsetHeight - aspectRatioH)}px`;
+                frameResize.style.marginLeft = `${parseInt(frameResize.style.marginTop + aspectRatioW)}px`
+            }
+        }
+        lastX = clientX;
+        lastY = clientY;
+        drawToCanvas();
+
+        // console.log(frame.offsetWidth);
+        // console.log(frame.style.height);
+        // drawToCanvas();
+    }
+
+
+
+
+
+
+
+    frameMove.addEventListener("mousedown", _ => {
+        frameMove.addEventListener("pointermove", watchCursorMove);
+    });
+    frameMove.addEventListener("mouseup", _ => {
+        frameMove.removeEventListener("pointermove", watchCursorMove);
+    });
+
+
+    telegramButton.addEventListener("click", () => {
+        drawToCanvas();
+        telegramButtonLabel.style.backgroundColor = "rgb(181 126 159)";
+
+        sendToTelegram();
+    });
+    downloadButton.addEventListener("click", () => {
+        drawToCanvas();
+        downloadImage();
+    });
+    uploadAgain.addEventListener("click", () => {
+        inputLabel.click();
+    });
+    frame.addEventListener("wheel", (e) => {
+        if (event.deltaY > 0) {
+            if (frame.offsetHeight < image.offsetHeight && frame.offsetWidth < image.offsetWidth) {
+
+                frame.style.width = `${parseInt(frame.offsetWidth + aspectRatioW)}px`;
+                frame.style.height = `${parseInt(frame.offsetHeight + aspectRatioH)}px`;
+                frameResize.style.marginTop = `${parseInt(frameResize.style.marginTop + aspectRatioH)}px`
+
+                drawToCanvas();
+            }
+        } else {
+            if (frame.offsetWidth > aspectRatioW * 10) {
+
+                frame.style.width = `${parseInt(frame.offsetWidth - aspectRatioW)}px`;
+                frame.style.height = `${parseInt(frame.offsetHeight - aspectRatioH)}px`;
+                frameResize.style.marginLeft = `${parseInt(frameResize.style.marginTop + aspectRatioW)}px`
+                drawToCanvas();
+            }
+        }
+    }, { passive: true });
+
+    const ctx = canvas.getContext("2d");
+    const fileReader = new FileReader();
+    fileReader.onload = () => {
+        image.onload = () => {
+            if (image.width < frameWidht || image.height < frameHeight) {
+                inputLabel.innerText = `uploaded image is
+                width: ${image.width}
+                height: ${image.height}
+                width >= 1200px
+                height >= 825px`;
+                return;
+            }
+            inputLabel.style.display = "none";
+            contrast.style.display = "block";
+            document.body.style.backgroundColor = "black";
+            contrast.style.width = `${image.width}px`;
+            contrast.style.height = `${image.height}px`;
+            frame.style.display = "block";
+
+            frame.style.left = `${parseInt(parseInt(image.width) / 2)}px`;
+            frame.style.top = `${parseInt(parseInt(image.height) / 2)}px`;
+
+            drawToCanvas();
+        };
+        image.src = fileReader.result;
+    };
+    function dropHandler(e) {
+        e.preventDefault();
+        inputLabel.style.backgroundColor = "#a9d3f2";
+        fileReader.readAsDataURL(e.dataTransfer.files[0]);
+    }
+
+    function dragOverHandler(e) {
+        e.preventDefault();
+        inputLabel.style.backgroundColor = "#ceebe8";
+    }
+    function dragLeaveHandler(e) {
+        e.preventDefault();
+        inputLabel.style.backgroundColor = "#a9d3f2";
+    }
+
+    function downloadImage() {
+        const aLast = document.getElementById("linkForDownload");
+        if (aLast) {
+            aLast.remove();
+        }
+        const a = document.createElement('a');
+        a.href = canvas.toDataURL("image/jpeg").replace("image/jpeg", "image/octet-stream");
+        a.download = '1200x825.jpg';
+        a.id = "linkForDownload";
+        a.click();
+    }
+    function sendToTelegram() {
+        const BOTTOKEN = "7503204474:AAFRb8OeB0uUHpAugCbiDwJEDppYJvdwKD4";
+        const chatID = "283404954";
+        canvas.toBlob(function (blob) {
+            let formData = new FormData();
+            formData.append(
+                "photo", blob, "doc.jpg"
+            );
+            formData.append('chat_id', chatID);
+            formData.append("caption", `{"command":"savephotoshow"}`);
+            formData.append("disable_notification", "true");
+            let request = new XMLHttpRequest();
+
+            request.open(
+                "POST",
+                `https://api.telegram.org/bot${BOTTOKEN}/sendPhoto`
+            );
+            request.send(formData);
+            telegramButtonLabel.style.backgroundColor = "rgb(209, 212, 240)";
+        });
+    }
+    function loadImage(e) {
+        fileReader.readAsDataURL(input.files[0]);
+    }
+
+    function drawToCanvas() {
+        ctx.drawImage(image,
+            parseInt(frame.style.left) - frame.offsetWidth / 2,
+            parseInt(frame.style.top) - frame.offsetHeight / 2,
+            frame.offsetWidth,
+            frame.offsetHeight,
+            0, 0, frameWidht, frameHeight);
+    }
+
+    function watchCursorMove(event) {
+        const { clientX, clientY } = event;
+        if (!frame.style.left) {
+            frame.style.left = 0;
+            frame.style.top = 0;
+        }
+        if (clientX * 5 > frame.offsetWidth / 2 && clientX * 5 < image.offsetWidth - frame.offsetWidth / 2) {
+            frame.style.left = `${clientX * 5}px`;
+        }
+        if (clientY * 5 > frame.offsetHeight / 2 && clientY * 5 < image.offsetHeight - frame.offsetHeight / 2) {
+            frame.style.top = `${clientY * 5}px`;
+        }
+        drawToCanvas();
+    }
+
+</script>
+
+</html>
